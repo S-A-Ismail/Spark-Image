@@ -1,0 +1,48 @@
+FROM ubuntu:latest
+
+WORKDIR '/mnt/spark'
+
+RUN ["apt","update","-y"]
+RUN ["apt","upgrade","-y"]
+RUN ["apt","install", "wget","-y"]
+RUN ["apt","install", "iproute2","-y"]
+RUN ["apt","install", "openssh-client","-y"]
+RUN ["apt","install", "openssh-server","-y"]
+RUN ["apt","install", "default-jdk","-y"]
+RUN ["apt","install", "scala","-y"]
+RUN ["apt","install", "python3","-y"]
+RUN ["apt","install", "git","-y"]
+RUN ["mkdir","logs"]
+RUN wget https://dlcdn.apache.org/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz
+RUN tar xvf spark-*
+RUN rm -rf spark-3.3.1-bin-hadoop3.tgz
+RUN echo "export SPARK_HOME=/mnt/spark/spark-3.3.1-bin-hadoop3" >> ~/.profile
+ENV PATH=$PATH:/mnt/spark/spark-3.3.1-bin-hadoop3/bin:/mnt/spark/spark-3.3.1-bin-hadoop3/sbin
+RUN echo "export PATH=$PATH" >> ~/.profile
+RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.profile
+RUN . ~/.profile
+#CMD bash /mnt/spark/spark-3.3.1-bin-hadoop3/sbin/start-master.sh
+#CMD /mnt/spark/spark-3.3.1-bin-hadoop3/bin/spark-class org.apache.spark.deploy.master.Master --ip $SPARK_MASTER_HOST --port $SPARK_MASTER_PORT --webui-port $SPARK_MASTER_WEBUI_PORT >> $SPARK_MASTER_LOG
+
+WORKDIR /mnt/spark
+
+ENV SPARK_MASTER_PORT=7077 \
+SPARK_MASTER_WEBUI_PORT=8080 \
+SPARK_LOG_DIR=/mnt/spark/logs \
+SPARK_MASTER_LOG=/mnt/spark/logs/spark-master.out \
+SPARK_WORKER_LOG=/mnt/spark/logs/spark-worker.out \
+SPARK_WORKER_WEBUI_PORT=8080 \
+SPARK_WORKER_PORT=7000 \
+SPARK_MASTER="spark://spark-master:7077" \
+SPARK_WORKLOAD="master" \
+SPARK_MASTER_HOST=host.docker.internal
+
+EXPOSE 8080 7077 6066
+
+RUN mkdir -p $SPARK_LOG_DIR && \
+touch $SPARK_MASTER_LOG && \
+touch $SPARK_WORKER_LOG && \
+ln -sf /dev/stdout $SPARK_MASTER_LOG && \
+ln -sf /dev/stdout $SPARK_WORKER_LOG
+
+CMD /mnt/spark/spark-3.3.1-bin-hadoop3/bin/spark-class org.apache.spark.deploy.worker.Worker --webui-port $SPARK_WORKER_WEBUI_PORT $SPARK_MASTER >> $SPARK_WORKER_LOG

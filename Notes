@@ -1,0 +1,23 @@
+docker pull ubuntu
+docker ps
+docker images
+docker run --name UbuntuMachine -it 58db3edaf2be /bin/bash
+docker tag f0d3d517dd38 syedismail/sparkimagev1
+docker run syedismail/sparkimagev1
+docker build -f Dockerfile.dev .
+docker images
+docker tag a52200df046f syedismail/sparkimagev2
+docker images
+docker build -f Dockerfile.dev . --tag syedismail/sparkimagev3
+docker run --name sparkmaster -it syedismail/sparkimage
+
+
+docker logs sparkmaster1
+docker exec -it sparkmaster1 bash
+docker cp sparkmaster1:/mnt/TestSpark.ipynb /mnt/i/Docker/Spark-Image/Test3
+
+docker build -f Dockerfile.dev . --tag syedismail/sparkimagemaster1
+docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster syedismail/sparkimagemaster1
+docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster1 syedismail/sparkimagemaster1
+docker build -f Dockerfile.dev . --tag syedismail/sparkimagemaster1
+docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster1 syedismail/sparkimagemaster1
