@@ -21,3 +21,5 @@ docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster syedismail/sparkimage
 docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster1 syedismail/sparkimagemaster1
 docker build -f Dockerfile.dev . --tag syedismail/sparkimagemaster1
 docker run -d -p 8080:8080 -p 8888:8888 --name sparkmaster1 syedismail/sparkimagemaster1
+
+mvn clean package -B -V -e -f /mnt/livy/pom.xml         -Pspark-3.0         -DskipTests         -DskipITs         -Dmaven.javadoc.skip=true
