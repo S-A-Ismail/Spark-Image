@@ -36,5 +36,13 @@ RUN echo "export SPARK_HOME=/mnt/spark" >> ~/.profile
 RUN echo "export PATH=$PATH" >> ~/.profile
 RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.profile \
     && . ~/.profile
+RUN mkdir /mnt/spark/logs
+RUN apt install -y unzip
+RUN wget https://dlcdn.apache.org/incubator/livy/0.7.1-incubating/apache-livy-0.7.1-incubating-bin.zip
+RUN unzip apache-livy-0.7.1-incubating-bin.zip
+RUN cp -rf apache-livy-0.7.1-incubating-bin/* /mnt/livy/
+# && rm -rf apache-livy-0.7.1-incubating-bin \
+# && rm -rf unzip apache-livy-0.7.1-incubating-bin.zip
 
-RUN /mnt/spark/bin/spark-class org.apache.spark.deploy.master.Master --port $SPARK_MASTER_PORT --webui-port $SPARK_MASTER_WEBUI_PORT >> $SPARK_MASTER_LOG
+COPY ./Service-Start.sh ./Service-Start.sh 
+CMD bash ./Service-Start.sh
