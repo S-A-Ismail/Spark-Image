@@ -1,13 +1,16 @@
 #!/bin/bash
 
 # Start the first process
-/mnt/spark/bin/spark-class org.apache.spark.deploy.master.Master --ip $SPARK_MASTER_HOST --port $SPARK_MASTER_PORT --webui-port $SPARK_MASTER_WEBUI_PORT >> $SPARK_MASTER_LOG
-  
-# Start the second process
+#/mnt/spark/bin/spark-class org.apache.spark.deploy.master.Master --host $SPARK_MASTER_HOST --port $SPARK_MASTER_PORT --webui-port $SPARK_MASTER_WEBUI_PORT >> $SPARK_MASTER_LOG
+source ~/.bashrc
+bash /mnt/spark/sbin/start-master.sh
+wait 
+# # Start the second process
 export SPARK_HOME="/mnt/spark"
 /mnt/livy/bin/livy-server start
   
-# Wait for any process to exit
+# # # Wait for any process to exit
 wait -n
-# Exit with status of process that exited first
+tail -f /dev/null
+# # # Exit with status of process that exited first
 exit $?

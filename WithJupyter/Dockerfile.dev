@@ -19,9 +19,9 @@ ENV SPARK_MASTER_PORT=7077 \
     SPARK_MASTER_LOG=/mnt/spark/logs/spark-master.out \
     SPARK_WORKER_LOG=/mnt/spark/logs/spark-worker.out \
     SPARK_WORKER_WEBUI_PORT=8080 \
-    SPARK_WORKER_PORT=7000 \
-    SPARK_MASTER="spark://spark-master:7077" \
-    SPARK_WORKLOAD="master"
+    SPARK_WORKER_PORT=7000
+    #SPARK_MASTER="spark://spark-master:7077" \
+    #SPARK_WORKLOAD="master"
 
 RUN ["apt","update","-y"]
 RUN ["apt","upgrade","-y"]
@@ -33,6 +33,7 @@ RUN cp -rf /mnt/spark-3.3.2-bin-hadoop3/* /mnt/spark/ \
     && rm -rf /mnt/spark-3.3.2-bin-hadoop3
 RUN echo "export SPARK_HOME=/mnt/spark" >> ~/.profile
 ENV PATH=$PATH:/mnt/spark/bin:/mnt/spark/sbin:/mnt/livy/bin
+RUN echo "export PYTHONPATH=/mnt/spark/python:/usr/bin/python3" >> ~/.profile
 RUN echo "export PATH=$PATH" >> ~/.profile
 RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.profile
 RUN echo 'export PYSPARK_DRIVER_PYTHON="jupyter"' >> ~/.profile

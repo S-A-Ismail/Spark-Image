@@ -16,9 +16,9 @@ ENV SPARK_MASTER_PORT=7077 \
     SPARK_MASTER_LOG=/mnt/spark/logs/spark-master.out \
     SPARK_WORKER_LOG=/mnt/spark/logs/spark-worker.out \
     SPARK_WORKER_WEBUI_PORT=8080 \
-    SPARK_WORKER_PORT=7000 \
-    SPARK_MASTER="spark://spark-master:7077" \
-    SPARK_WORKLOAD="master"
+    SPARK_WORKER_PORT=7000 
+    #SPARK_MASTER="spark://spark-master:7077" \
+    #SPARK_WORKLOAD="master"
 
 RUN ["apt","update","-y"]
 RUN ["apt","upgrade","-y"]
@@ -32,17 +32,17 @@ RUN tar xvf spark.tgz \
     && rm -rf spark.tgz
 RUN cp -rf /mnt/spark-2.4.5-bin-hadoop2.7/* /mnt/spark/ \
     && rm -rf /mnt/spark-2.4.5-bin-hadoop2.7
-RUN echo "export SPARK_HOME=/mnt/spark" >> ~/.profile
-RUN echo "export PATH=$PATH" >> ~/.profile
-RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.profile \
-    && . ~/.profile
-RUN mkdir /mnt/spark/logs
 RUN apt install -y unzip
 RUN wget https://dlcdn.apache.org/incubator/livy/0.7.1-incubating/apache-livy-0.7.1-incubating-bin.zip
 RUN unzip apache-livy-0.7.1-incubating-bin.zip
-RUN cp -rf apache-livy-0.7.1-incubating-bin/* /mnt/livy/
-# && rm -rf apache-livy-0.7.1-incubating-bin \
-# && rm -rf unzip apache-livy-0.7.1-incubating-bin.zip
+RUN cp -rf apache-livy-0.7.1-incubating-bin/* /mnt/livy/ \
+&& rm -rf apache-livy-0.7.1-incubating-bin \
+&& rm -rf unzip apache-livy-0.7.1-incubating-bin.zip
+RUN echo "export SPARK_HOME=/mnt/spark" >> ~/.bashrc
+RUN echo "export PATH=$PATH" >> ~/.bashrc
+RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.bashrc \
+    && . ~/.bashrc
+RUN mkdir /mnt/spark/logs
 
 COPY ./Service-Start.sh ./Service-Start.sh 
 CMD bash ./Service-Start.sh
