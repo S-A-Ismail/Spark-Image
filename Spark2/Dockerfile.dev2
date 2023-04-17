@@ -1,0 +1,47 @@
+FROM phusion/baseimage:jammy-1.0.1
+
+WORKDIR '/mnt/'
+
+ENV SPARK_VERSION = 2.4.5 \
+HADOOP_VERSION = 2.7
+
+RUN mkdir /mnt/hadoop
+RUN mkdir /mnt/spark
+RUN mkdir /mnt/livy
+RUN mkdir /mnt/jupyter
+
+ENV SPARK_MASTER_PORT=7077 \
+    SPARK_MASTER_WEBUI_PORT=8080 \
+    SPARK_LOG_DIR=/mnt/spark/logs \
+    SPARK_MASTER_LOG=/mnt/spark/logs/spark-master.out \
+    SPARK_WORKER_LOG=/mnt/spark/logs/spark-worker.out \
+    SPARK_WORKER_WEBUI_PORT=8080 \
+    SPARK_WORKER_PORT=7000 
+
+RUN ["apt","update","-y"]
+RUN ["apt","upgrade","-y"]
+RUN apt install -y wget
+RUN apt install -y openjdk-8-jdk
+RUN apt install -y scala
+RUN apt install -y python3 python3-pip
+
+RUN wget --no-verbose -O spark.tgz https://archive.apache.org/dist/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
+RUN tar xvf spark.tgz \
+    && rm -rf spark.tgz
+RUN cp -rf /mnt/spark-2.4.5-bin-hadoop2.7/* /mnt/spark/ \
+    && rm -rf /mnt/spark-2.4.5-bin-hadoop2.7
+RUN echo "export SPARK_HOME=/mnt/spark" >> ~/.bashrc
+RUN echo "export PATH=$PATH" >> ~/.bashrc
+RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.bashrc \
+    && . ~/.bashrc
+
+EXPOSE 8080 7077 6066
+
+RUN mkdir -p $SPARK_LOG_DIR && \
+touch $SPARK_MASTER_LOG && \
+touch $SPARK_WORKER_LOG && \
+ln -sf /dev/stdout $SPARK_MASTER_LOG && \
+ln -sf /dev/stdout $SPARK_WORKER_LOG
+
+COPY ./Start-worker.sh ./Start-worker.sh
+CMD bash ./Start-worker.sh
