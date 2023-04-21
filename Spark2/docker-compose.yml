@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   spark-master:
-    image: spark2masterv4
+    image: syedismail/spark2masterv7
     ports:
       - "9090:8080"
       - "7077:7077"
@@ -13,6 +13,9 @@ services:
     environment:
       - SPARK_LOCAL_IP=spark-master
       - SPARK_WORKLOAD=master
+    hostname: spark
+    links:
+      - metastore
   spark-worker-a:
     image: spark2worker
     ports:
@@ -23,9 +26,9 @@ services:
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_MEMORY=256M
-      - SPARK_DRIVER_MEMORY=256M
-      - SPARK_EXECUTOR_MEMORY=256M
+      - SPARK_WORKER_MEMORY=512M
+      - SPARK_DRIVER_MEMORY=512M
+      - SPARK_EXECUTOR_MEMORY=512M
       - SPARK_WORKLOAD=worker
       - SPARK_LOCAL_IP=spark-worker-a
     volumes:
@@ -41,17 +44,26 @@ services:
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_MEMORY=256M
-      - SPARK_DRIVER_MEMORY=256M
-      - SPARK_EXECUTOR_MEMORY=256M
+      - SPARK_WORKER_MEMORY=512M
+      - SPARK_DRIVER_MEMORY=512M
+      - SPARK_EXECUTOR_MEMORY=512M
       - SPARK_WORKLOAD=worker
       - SPARK_LOCAL_IP=spark-worker-b
     volumes:
         - ./apps:/opt/spark-apps
         - ./data:/opt/spark-data
-  demo-database:
+  metastore:
     image: postgres:11.7-alpine
     ports: 
       - "5432:5432"
+      - "9083:9083"
+    hostname: hivemetastore
     environment: 
-      - POSTGRES_PASSWORD=casa1234
+      - POSTGRES_PASSWORD=hive123
+      - POSTGRES_USER=hiveuser
+  jupyter:
+    image: jupyter
+    links:
+      - spark-master
+    ports:
+      - "8888:8888"

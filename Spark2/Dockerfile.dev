@@ -44,5 +44,8 @@ RUN echo "export PYSPARK_PYTHON=/usr/bin/python3" >> ~/.bashrc \
     && . ~/.bashrc
 RUN mkdir /mnt/spark/logs
 
+COPY ./postgresql-42.6.0.jar /mnt/spark/jars/postgresql-42.6.0.jar
+COPY ./livy.conf /mnt/livy/conf/livy.conf
+COPY ./hive-site.xml /mnt/spark/conf/hive-site.xml
 COPY ./Service-Start.sh ./Service-Start.sh 
 CMD bash ./Service-Start.sh

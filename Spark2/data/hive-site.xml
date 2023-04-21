@@ -1,0 +1,8 @@
+<configuration>
+  <property>
+  <name>hive.metastore.uris</name>
+    <!-- hostname must point to the Hive metastore URI in your cluster -->
+    <value>thrift://72a3bbf7022f0a13de139bb39c595511c6dd324a34c8af9bda7b336b3758903b:5432</value>
+    <description>URI for client to contact metastore server</description>
+  </property>
+</configuration>

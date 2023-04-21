@@ -1,0 +1,10 @@
+SparkSession Confs
+{
+    "driverMemory": "512M",
+    "executorCores": 2,
+    "executorMemory": "512M",
+    "conf": {
+        "spark.master": "spark://spark:7077"
+    }
+}
+
